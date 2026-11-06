@@ -1,0 +1,937 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #f5f7fb;
+      color: #202b3c;
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    header {
+      margin-bottom: 22px;
+    }
+
+    header h1 {
+      font-size: 25px;
+      margin: 0 0 7px;
+    }
+
+    header p {
+      color: #718096;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .nav button {
+      flex: 1;
+      min-height: 48px;
+      border: 0;
+      border-radius: 12px;
+      background: #e8edf5;
+      color: #4a5568;
+      font-weight: bold;
+    }
+
+    .nav button.active {
+      background: #2859d9;
+      color: white;
+    }
+
+    .panel {
+      background: white;
+      padding: 18px;
+      border-radius: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.04);
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 0 0 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 14px 0 7px;
+    }
+
+    input, select {
+      width: 100%;
+      min-height: 48px;
+      border: 1px solid #dce2eb;
+      border-radius: 10px;
+      padding: 10px 12px;
+      background: white;
+      color: #202b3c;
+    }
+
+    input:focus, select:focus {
+      outline: 2px solid #a9c0ff;
+      border-color: #2859d9;
+    }
+
+    button.primary {
+      width: 100%;
+      min-height: 52px;
+      margin-top: 16px;
+      border: none;
+      border-radius: 11px;
+      background: #2859d9;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .target-card {
+      border: 1px solid #e3e8f0;
+      border-radius: 13px;
+      padding: 15px;
+      margin-bottom: 12px;
+      background: white;
+    }
+
+    .target-card-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .target-title {
+      flex: 1;
+      min-width: 0;
+      font-weight: bold;
+      font-size: 17px;
+      margin: 5px 0 8px;
+      cursor: pointer;
+      overflow-wrap: anywhere;
+    }
+
+    .target-title:hover {
+      color: #2859d9;
+    }
+
+    .delete-icon-btn {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: 1px solid #f2b8b5;
+      border-radius: 10px;
+      background: #fff5f5;
+      color: #d93025;
+      cursor: pointer;
+    }
+
+    .delete-icon-btn:hover {
+      background: #ffe5e5;
+    }
+
+    .delete-icon-btn svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .meta {
+      color: #718096;
+      font-size: 13px;
+      margin: 5px 0 12px;
+    }
+
+    .deadline-warning {
+      color: #e53935 !important;
+      font-weight: bold;
+    }
+
+    /* 자동 계산되는 대상 상태 표시 */
+    .target-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #4a5568;
+    }
+
+    .target-status strong {
+      color: #2859d9;
+      font-weight: bold;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .summary-item {
+      padding: 17px 8px;
+      background: #f2f5fb;
+      border-radius: 13px;
+      text-align: center;
+    }
+
+    .summary-item strong {
+      display: block;
+      font-size: 26px;
+      margin-bottom: 7px;
+      color: #2859d9;
+    }
+
+    .summary-item span {
+      font-size: 12px;
+      color: #718096;
+      word-break: keep-all;
+    }
+
+    .back-btn {
+      width: auto;
+      min-height: 44px;
+      margin: 0 0 14px;
+      padding: 0 15px;
+      background: #e8edf5;
+      color: #344054;
+      border: 0;
+      border-radius: 10px;
+      font-weight: bold;
+    }
+
+    .submission-card {
+      border: 1px solid #e3e8f0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .submission-card input {
+      margin-bottom: 8px;
+    }
+
+    .file-input {
+      min-height: 44px;
+      padding: 8px;
+      font-size: 13px;
+    }
+
+    .file-status {
+      margin-top: 12px;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .file-status.complete {
+      color: #168052;
+    }
+
+    .file-status.incomplete {
+      color: #d93025;
+    }
+
+    .file-name {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #718096;
+      overflow-wrap: anywhere;
+    }
+
+    .empty {
+      padding: 25px 12px;
+      color: #8792a2;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 30px;
+      color: #718096;
+    }
+
+    .error {
+      color: #c0392b;
+      font-size: 13px;
+      margin-top: 10px;
+    }
+
+    @media (max-width: 380px) {
+      .app {
+        padding: 15px 11px 30px;
+      }
+
+      .panel {
+        padding: 14px;
+      }
+
+      .summary-item {
+        padding: 14px 4px;
+      }
+
+      .summary-item strong {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="app">
+
+  <header>
+    <h1>제출물 관리</h1>
+    <p>마감일과 제출 현황을 한곳에서 관리하세요.</p>
+  </header>
+
+  <div class="nav">
+    <button id="listTab" class="active"
+            onclick="showPage('list')">
+      목록
+    </button>
+
+    <button id="summaryTab"
+            onclick="showPage('summary')">
+      요약
+    </button>
+  </div>
+
+  <div id="loading" class="loading">
+    데이터를 불러오는 중입니다...
+  </div>
+
+  <!-- 목록 화면 -->
+  <section id="listPage" class="hidden">
+
+    <div class="panel">
+      <h2>새 대상 등록</h2>
+
+      <label for="targetName">대상 이름</label>
+      <input id="targetName"
+             type="text"
+             placeholder="예: A회사">
+
+      <label for="targetDeadline">마감일시</label>
+      <input id="targetDeadline"
+             type="datetime-local">
+
+      <button class="primary" onclick="addTarget()">
+        + 대상 등록
+      </button>
+    </div>
+
+    <div class="panel">
+      <h2>대상 목록</h2>
+      <div id="targetList"></div>
+    </div>
+
+  </section>
+
+  <!-- 요약 화면 -->
+  <section id="summaryPage" class="hidden">
+    <div class="panel">
+      <h2>전체 현황</h2>
+
+      <div class="summary-grid">
+        <div class="summary-item">
+          <strong id="totalCount">0</strong>
+          <span>전체 대상</span>
+        </div>
+
+        <div class="summary-item">
+          <strong id="progressCount">0</strong>
+          <span>진행 중</span>
+        </div>
+
+        <div class="summary-item">
+          <strong id="completedCount">0</strong>
+          <span>완료 대상</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 제출물 상세 화면 -->
+  <section id="detailPage" class="hidden">
+
+    <button class="back-btn" onclick="backToList()">
+      ← 목록으로
+    </button>
+
+    <div class="panel">
+      <h2 id="detailTitle">대상 이름</h2>
+      <div id="detailDeadline" class="meta"></div>
+    </div>
+
+    <div class="panel">
+      <h2>제출물 추가</h2>
+
+      <input id="submissionName"
+             type="text"
+             placeholder="제출물 이름을 입력하세요">
+
+      <button class="primary"
+              onclick="addSubmission()">
+        + 제출물 추가
+      </button>
+    </div>
+
+    <div class="panel">
+      <h2>제출물 목록</h2>
+      <div id="submissionList"></div>
+    </div>
+
+  </section>
+
+  <div id="errorMessage" class="error"></div>
+
+</div>
+
+<script>
+  let appData = {
+    targets: [],
+    summary: {}
+  };
+
+  let selectedTargetId = null;
+
+  // 파일 선택 상태는 현재 페이지에서만 유지합니다.
+  // 서버나 스프레드시트에는 저장하지 않습니다.
+  let selectedFiles = {};
+
+  function escapeHtml(value) {
+    return String(value ?? '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[char]);
+  }
+
+  function formatDate(timestamp) {
+    if (!timestamp) return '-';
+
+    return new Date(timestamp).toLocaleString('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+  }
+
+  function showError(message) {
+    document.getElementById('errorMessage').textContent =
+      message || '';
+  }
+
+  function setLoading(isLoading) {
+    document.getElementById('loading')
+      .classList.toggle('hidden', !isLoading);
+  }
+
+  function loadData(callback) {
+    setLoading(true);
+    showError('');
+
+    google.script.run
+      .withSuccessHandler(data => {
+        appData = data;
+
+        // 새로고침하면 선택된 파일이 없으므로
+        // 대상 상태도 모두 파일 미선택 기준으로 계산합니다.
+        updateTargetStatusesFromLocalFiles();
+
+        renderAll();
+        setLoading(false);
+
+        if (callback) callback();
+      })
+      .withFailureHandler(error => {
+        setLoading(false);
+        showError(
+          error.message || '데이터를 불러오지 못했습니다.'
+        );
+      })
+      .getInitialData();
+  }
+
+  // 파일 선택 여부에 따라 대상 상태와 요약 계산
+  function updateTargetStatusesFromLocalFiles() {
+    appData.targets.forEach(target => {
+      const submissions = target.submissions || [];
+
+      const selectedCount = submissions.filter(
+        item => !!selectedFiles[item.id]
+      ).length;
+
+      if (
+        submissions.length === 0 ||
+        selectedCount === 0
+      ) {
+        target.status = '진행 전';
+
+      } else if (
+        selectedCount === submissions.length
+      ) {
+        target.status = '완료';
+
+      } else {
+        target.status = '진행 중';
+      }
+    });
+
+    appData.summary = {
+      total: appData.targets.length,
+      progress: appData.targets.filter(
+        target => target.status === '진행 중'
+      ).length,
+      completed: appData.targets.filter(
+        target => target.status === '완료'
+      ).length
+    };
+  }
+
+  function renderAll() {
+    updateTargetStatusesFromLocalFiles();
+
+    renderTargets();
+    renderSummary();
+
+    if (selectedTargetId) {
+      renderDetail();
+    }
+  }
+
+  function showPage(page) {
+    document.getElementById('listPage')
+      .classList.toggle('hidden', page !== 'list');
+
+    document.getElementById('summaryPage')
+      .classList.toggle('hidden', page !== 'summary');
+
+    document.getElementById('detailPage')
+      .classList.add('hidden');
+
+    document.getElementById('listTab')
+      .classList.toggle('active', page === 'list');
+
+    document.getElementById('summaryTab')
+      .classList.toggle('active', page === 'summary');
+
+    window.scrollTo(0, 0);
+  }
+
+  // 대상 목록 표시
+  function renderTargets() {
+    const container = document.getElementById('targetList');
+
+    if (!appData.targets.length) {
+      container.innerHTML =
+        '<div class="empty">등록된 대상이 없습니다.<br>새 대상을 등록해 주세요.</div>';
+      return;
+    }
+
+    const now = Date.now();
+    const threeDays = 3 * 24 * 60 * 60 * 1000;
+
+    const sortedTargets = [...appData.targets].sort((a, b) => {
+      if (!a.deadline && !b.deadline) return 0;
+      if (!a.deadline) return 1;
+      if (!b.deadline) return -1;
+
+      return a.deadline - b.deadline;
+    });
+
+    container.innerHTML = sortedTargets.map(target => {
+      const isDeadlineWarning =
+        target.deadline &&
+        target.deadline - now <= threeDays;
+
+      return `
+        <div class="target-card">
+
+          <div class="target-card-header">
+
+            <div class="target-title"
+                 onclick="openDetail('${target.id}')">
+              ${escapeHtml(target.name)}
+            </div>
+
+            <button
+              type="button"
+              class="delete-icon-btn"
+              title="대상 삭제"
+              aria-label="대상 삭제"
+              onclick="deleteTarget('${target.id}')">
+
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true">
+
+                <path d="M3 6h18"></path>
+                <path d="M8 6V4h8v2"></path>
+                <path d="M19 6l-1 14H6L5 6"></path>
+                <path d="M10 11v5"></path>
+                <path d="M14 11v5"></path>
+
+              </svg>
+
+            </button>
+
+          </div>
+
+          <div class="meta ${isDeadlineWarning ? 'deadline-warning' : ''}">
+            마감일시: ${formatDate(target.deadline)}
+          </div>
+
+          <div class="target-status">
+            대상 상태:
+            <strong>${escapeHtml(target.status)}</strong>
+          </div>
+
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 요약 표시
+  function renderSummary() {
+    const summary = appData.summary || {};
+
+    document.getElementById('totalCount').textContent =
+      summary.total || 0;
+
+    document.getElementById('progressCount').textContent =
+      summary.progress || 0;
+
+    document.getElementById('completedCount').textContent =
+      summary.completed || 0;
+  }
+
+  // 대상 등록
+  function addTarget() {
+    const name = document.getElementById('targetName')
+      .value.trim();
+
+    const deadline = document.getElementById('targetDeadline')
+      .value;
+
+    if (!name || !deadline) {
+      showError('대상 이름과 마감일시를 입력해 주세요.');
+      return;
+    }
+
+    showError('');
+
+    google.script.run
+      .withSuccessHandler(data => {
+        appData = data;
+
+        document.getElementById('targetName').value = '';
+        document.getElementById('targetDeadline').value = '';
+
+        renderAll();
+        showError('');
+      })
+      .withFailureHandler(error => {
+        showError(error.message);
+      })
+      .addTarget({
+        name: name,
+        deadline: new Date(deadline).toISOString()
+      });
+  }
+
+  // 대상 삭제
+  function deleteTarget(id) {
+    const target = appData.targets.find(
+      item => item.id === id
+    );
+
+    if (!target) return;
+
+    const confirmed = confirm(
+      '"' + target.name + '" 대상을 삭제하시겠습니까?\n\n' +
+      '연결된 제출물도 함께 삭제됩니다.'
+    );
+
+    if (!confirmed) return;
+
+    showError('');
+
+    google.script.run
+      .withSuccessHandler(data => {
+        appData = data;
+
+        // 삭제된 대상의 파일 선택 상태도 제거
+        target.submissions.forEach(item => {
+          delete selectedFiles[item.id];
+        });
+
+        if (selectedTargetId === id) {
+          selectedTargetId = null;
+          showPage('list');
+        }
+
+        renderAll();
+        showError('');
+      })
+      .withFailureHandler(error => {
+        showError(error.message);
+      })
+      .deleteTarget(id);
+  }
+
+  // 제출물 상세 화면 열기
+  function openDetail(id) {
+    selectedTargetId = id;
+
+    document.getElementById('listPage')
+      .classList.add('hidden');
+
+    document.getElementById('summaryPage')
+      .classList.add('hidden');
+
+    document.getElementById('detailPage')
+      .classList.remove('hidden');
+
+    document.getElementById('listTab')
+      .classList.remove('active');
+
+    document.getElementById('summaryTab')
+      .classList.remove('active');
+
+    renderDetail();
+    window.scrollTo(0, 0);
+  }
+
+  // 목록으로 돌아가기
+  function backToList() {
+    selectedTargetId = null;
+    showPage('list');
+  }
+
+  // 제출물 상세 화면 표시
+  function renderDetail() {
+    const target = appData.targets.find(
+      item => item.id === selectedTargetId
+    );
+
+    if (!target) {
+      backToList();
+      return;
+    }
+
+    document.getElementById('detailTitle').textContent =
+      target.name;
+
+    document.getElementById('detailDeadline').textContent =
+      '마감일시: ' + formatDate(target.deadline);
+
+    renderSubmissions(target);
+  }
+
+  // 제출물 추가
+  function addSubmission() {
+    const name = document.getElementById('submissionName')
+      .value.trim();
+
+    if (!name) {
+      showError('제출물 이름을 입력해 주세요.');
+      return;
+    }
+
+    google.script.run
+      .withSuccessHandler(data => {
+        appData = data;
+
+        document.getElementById('submissionName').value = '';
+
+        renderAll();
+        showError('');
+      })
+      .withFailureHandler(error => {
+        showError(error.message);
+      })
+      .addSubmission({
+        targetId: selectedTargetId,
+        name: name
+      });
+  }
+
+  // 제출물 목록 표시
+  function renderSubmissions(target) {
+    const container = document.getElementById('submissionList');
+
+    if (!target.submissions.length) {
+      container.innerHTML =
+        '<div class="empty">등록된 제출물이 없습니다.</div>';
+      return;
+    }
+
+    container.innerHTML = target.submissions.map(item => {
+      const hasFile = !!selectedFiles[item.id];
+      const fileName = hasFile
+        ? selectedFiles[item.id]
+        : '';
+
+      return `
+        <div class="submission-card">
+
+          <label>제출물 이름</label>
+
+          <input
+            type="text"
+            id="name-${item.id}"
+            value="${escapeHtml(item.name)}"
+            onchange="saveSubmission('${item.id}')">
+
+          <label>파일 선택</label>
+
+          <input
+            class="file-input"
+            type="file"
+            id="file-${item.id}"
+            onchange="handleFileSelection('${item.id}', this)">
+
+          <div
+            id="file-status-${item.id}"
+            class="file-status ${hasFile ? 'complete' : 'incomplete'}">
+            ${hasFile ? '완료' : '미완료'}
+          </div>
+
+          <div
+            id="file-name-${item.id}"
+            class="file-name">
+            ${hasFile
+              ? '선택된 파일: ' + escapeHtml(fileName)
+              : '선택된 파일이 없습니다.'}
+          </div>
+
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 파일 선택 처리
+  // 파일 자체는 전송하거나 저장하지 않습니다.
+  function handleFileSelection(id, input) {
+    const file = input.files && input.files[0];
+
+    if (!file) {
+      return;
+    }
+
+    // 파일 이름만 브라우저 메모리에 보관
+    selectedFiles[id] = file.name;
+
+    const statusElement = document.getElementById(
+      'file-status-' + id
+    );
+
+    const nameElement = document.getElementById(
+      'file-name-' + id
+    );
+
+    statusElement.textContent = '완료';
+    statusElement.classList.remove('incomplete');
+    statusElement.classList.add('complete');
+
+    nameElement.textContent = '선택된 파일: ' + file.name;
+
+    // 파일 선택 여부에 따라 대상 상태와 요약 갱신
+    updateTargetStatusesFromLocalFiles();
+    renderTargets();
+    renderSummary();
+
+    showError('');
+  }
+
+  // 제출물 이름 변경 시 자동 저장
+  function saveSubmission(id) {
+    const name = document.getElementById('name-' + id)
+      .value.trim();
+
+    if (!name) {
+      showError('제출물 이름을 입력해 주세요.');
+      return;
+    }
+
+    showError('');
+
+    google.script.run
+      .withSuccessHandler(data => {
+        appData = data;
+
+        // 파일 선택 상태는 브라우저 메모리에 유지
+        renderAll();
+        showError('');
+      })
+      .withFailureHandler(error => {
+        showError(error.message);
+      })
+      .updateSubmission({
+        submissionId: id,
+        name: name
+      });
+  }
+
+  // 최초 실행
+  window.addEventListener('load', () => {
+    showPage('list');
+    loadData();
+  });
+</script>
+
+</body>
+</html>
